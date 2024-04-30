@@ -1,0 +1,56 @@
+class TreeNode:
+    def __init__(self, key):
+        self.key = key
+        self.left = None
+        self.right = None
+
+def build_optimal_bst(keys, probabilities):
+    n = len(keys)
+    cost = [[0] * (n+1) for _ in range(n+1)]
+    root = [[0] * n for _ in range(n)]
+    
+    for i in range(n):
+        cost[i][i+1] = probabilities[i]
+        root[i][i] = i
+    
+    for length in range(2, n+1):
+        for i in range(n-length+1):
+            j = i + length
+            min_cost = float('inf')
+            min_root = 0
+            for r in range(i, j):
+                c = cost[i][r] + cost[r][j]
+                if c < min_cost:
+                    min_cost = c
+                    min_root = r
+            for k in range(i, j):
+                cost[i][j] += probabilities[k]
+            cost[i][j] += min_cost
+            root[i][j-1] = min_root
+    
+    return build_tree(keys, root, 0, n-1)
+
+def build_tree(keys, root, i, j):
+    if i > j:
+        return None
+    mid = root[i][j]
+    node = TreeNode(keys[mid])
+    node.left = build_tree(keys, root, i, mid-1)
+    node.right = build_tree(keys, root, mid+1, j)
+    return node
+
+def inorder_traversal(root):
+    if root:
+        inorder_traversal(root.left)
+        print(root.key)
+        inorder_traversal(root.right)
+
+def main():
+    keys = [int(x) for x in input("Enter keys separated by space: ").split()]
+    probabilities = [float(x) for x in input("Enter probabilities separated by space: ").split()]
+    root = build_optimal_bst(keys, probabilities)
+    print("Inorder traversal of the constructed BST:")
+    inorder_traversal(root)
+
+if __name__ == "__main__":
+    main()
