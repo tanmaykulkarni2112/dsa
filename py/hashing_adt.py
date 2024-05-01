@@ -1,0 +1,76 @@
+class HashTable:
+    def __init__(self, size):
+        self.size = size
+        self.table = [None] * size
+    
+    def hash_function(self, key):
+        return hash(key) % self.size
+    
+    def insert(self, key, value):
+        index = self.hash_function(key)
+        if self.table[index] is None:
+            # If the slot is empty, create a new chain with the key-value pair
+            self.table[index] = [(key, value)]
+        else:
+            # If the slot is not empty, search for the key in the chain
+            for i, (existing_key, _) in enumerate(self.table[index]):
+                if existing_key == key:
+                    # If the key already exists, update its value and return
+                    self.table[index][i] = (key, value)
+                    return
+            # If the key doesn't exist in the chain, append it to the end of the chain
+            self.table[index].append((key, value))
+
+    def find(self, key):
+        index = self.hash_function(key)
+        chain = self.table[index]
+        if chain is not None:
+            for existing_key, value in chain:
+                if existing_key == key:
+                    print(f"Value found: {value}")
+                    return
+        print(f"Key '{key}' not found")
+
+    def delete(self, key):
+        index = self.hash_function(key)
+        chain = self.table[index]
+        if chain is not None:
+            for i, (existing_key, _) in enumerate(chain):
+                if existing_key == key:
+                    del chain[i]  # Delete key-value pair
+                    print("Key-value pair deleted successfully.")
+                    return
+        print(f"Key '{key}' not found")
+
+def print_menu():
+    print("\nMenu:")
+    print("1. Insert key-value pair")
+    print("2. Find value by key")
+    print("3. Delete key-value pair")
+    print("4. Exit")
+
+def main():
+    size = int(input("Enter size of hash table: "))
+    dictionary = HashTable(size)
+    while True:
+        print_menu()
+        choice = input("Enter your choice: ")
+        if choice == "1":
+            key = input("Enter key: ")
+            value = input("Enter value: ")
+            dictionary.insert(key, value)
+            print("Key-value pair inserted successfully.")
+        elif choice == "2":
+            key = input("Enter key to find value: ")
+            dictionary.find(key)
+        elif choice == "3":
+            key = input("Enter key to delete: ")
+            dictionary.delete(key)
+        elif choice == "4":
+            print("Exiting program.")
+            break
+        else:
+            print("Invalid choice. Please enter a valid option.")
+
+if __name__ == "__main__":
+    main()
