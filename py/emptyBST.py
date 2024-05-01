@@ -13,97 +13,57 @@ class BinarySearchTree:
         if not self.root:
             self.root = TreeNode(key, value)
         else:
-            self._insert_recursively(self.root, key, value)
-    
-    def _insert_recursively(self, node, key, value):
-        if key < node.key:
-            if node.left is None:
-                node.left = TreeNode(key, value)
-            else:
-                self._insert_recursively(node.left, key, value)
-        elif key > node.key:
-            if node.right is None:
-                node.right = TreeNode(key, value)
-            else:
-                self._insert_recursively(node.right, key, value)
-        else:
-            # Key already exists, update the value
-            node.value = value
+            node = self.root
+            while node:
+                if key < node.key:
+                    if node.left is None:
+                        node.left = TreeNode(key, value)
+                        break
+                    else:
+                        node = node.left
+                elif key > node.key:
+                    if node.right is None:
+                        node.right = TreeNode(key, value)
+                        break
+                    else:
+                        node = node.right
+                else:
+                    node.value = value
+                    break
     
     def search(self, key):
-        return self._search_recursively(self.root, key)
-    
-    def _search_recursively(self, node, key):
-        if node is None or node.key == key:
-            return node
-        if key < node.key:
-            return self._search_recursively(node.left, key)
-        return self._search_recursively(node.right, key)
-    
-    def delete(self, key):
-        self.root = self._delete_recursively(self.root, key)
-    
-    def _delete_recursively(self, root, key):
-        if root is None:
-            return root
-        if key < root.key:
-            root.left = self._delete_recursively(root.left, key)
-        elif key > root.key:
-            root.right = self._delete_recursively(root.right, key)
-        else:
-            if root.left is None:
-                temp = root.right
-                root = None
-                return temp
-            elif root.right is None:
-                temp = root.left
-                root = None
-                return temp
-            temp = self._min_value_node(root.right)
-            root.key = temp.key
-            root.value = temp.value
-            root.right = self._delete_recursively(root.right, temp.key)
-        return root
-    
-    def _min_value_node(self, node):
-        current = node
-        while current.left is not None:
-            current = current.left
-        return current
-    
-    def inorder_traversal(self, node, ascending=True):
-        if node:
-            if ascending:
-                self.inorder_traversal(node.left, ascending)
-                print(node.key, "->", node.value)
-                self.inorder_traversal(node.right, ascending)
+        node = self.root
+        while node:
+            if node.key == key:
+                return node
+            elif key < node.key:
+                node = node.left
             else:
-                self.inorder_traversal(node.right, ascending)
-                print(node.key, "->", node.value)
-                self.inorder_traversal(node.left, ascending)
-        else:
-            return
+                node = node.right
+        return None
     
     def max_comparisons(self):
-        return self._max_comparisons_recursively(self.root)
-    
-    def _max_comparisons_recursively(self, node):
-        if node is None:
-            return 0
-        return 1 + max(self._max_comparisons_recursively(node.left),
-                       self._max_comparisons_recursively(node.right))
+        node = self.root
+        max_depth = 0
+        stack = []
+        while node or stack:
+            if node:
+                stack.append((node, 1))
+                node = node.left
+            else:
+                node, depth = stack.pop()
+                max_depth = max(max_depth, depth)
+                node = node.right
+        return max_depth
 
 # Main program
 bst = BinarySearchTree()
 while True:
     print("\nDictionary Management System")
     print("1. Add Keyword and Meaning")
-    print("2. Delete Keyword")
-    print("3. Update Meaning of Keyword")
-    print("4. Display Data (Ascending Order)")
-    print("5. Display Data (Descending Order)")
-    print("6. Maximum Comparisons Required")
-    print("7. Exit")
+    print("2. Search for Keyword")
+    print("3. Maximum Comparisons Required")
+    print("4. Exit")
     choice = input("Enter your choice: ")
     if choice == '1':
         keyword = input("Enter Keyword: ")
@@ -111,29 +71,15 @@ while True:
         bst.insert(keyword, meaning)
         print("Keyword added successfully.")
     elif choice == '2':
-        keyword = input("Enter Keyword to delete: ")
-        if bst.search(keyword):
-            bst.delete(keyword)
-            print("Keyword deleted successfully.")
+        keyword = input("Enter Keyword to search: ")
+        result = bst.search(keyword)
+        if result:
+            print(f"Meaning: {result.value}")
         else:
             print("Keyword not found.")
     elif choice == '3':
-        keyword = input("Enter Keyword to update meaning: ")
-        if bst.search(keyword):
-            new_meaning = input("Enter New Meaning: ")
-            bst.insert(keyword, new_meaning)
-            print("Meaning updated successfully.")
-        else:
-            print("Keyword not found.")
-    elif choice == '4':
-        print("Dictionary Data (Ascending Order):")
-        bst.inorder_traversal(bst.root)
-    elif choice == '5':
-        print("Dictionary Data (Descending Order):")
-        bst.inorder_traversal(bst.root, ascending=False)
-    elif choice == '6':
         print("Maximum Comparisons Required:", bst.max_comparisons())
-    elif choice == '7':
+    elif choice == '4':
         print("Exiting program.")
         break
     else:
