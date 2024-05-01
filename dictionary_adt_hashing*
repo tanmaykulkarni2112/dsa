@@ -27,8 +27,9 @@ class HashTable:
         if chain is not None:
             for existing_key, value in chain:
                 if existing_key == key:
-                    return value
-            raise KeyError(f"Key '{key}' not found")
+                    print(f"Value found: {value}")
+                    return
+        print(f"Key '{key}' not found")
 
     def delete(self, key):
         index = self.hash_function(key)
@@ -37,8 +38,9 @@ class HashTable:
             for i, (existing_key, _) in enumerate(chain):
                 if existing_key == key:
                     del chain[i]  # Delete key-value pair
+                    print("Key-value pair deleted successfully.")
                     return
-            raise KeyError(f"Key '{key}' not found")
+        print(f"Key '{key}' not found")
 
 def print_menu():
     print("\nMenu:")
@@ -60,18 +62,10 @@ def main():
             print("Key-value pair inserted successfully.")
         elif choice == "2":
             key = input("Enter key to find value: ")
-            try:
-                value = dictionary.find(key)
-                print(f"Value found: {value}")
-            except KeyError as e:
-                print(e)
+            dictionary.find(key)
         elif choice == "3":
             key = input("Enter key to delete: ")
-            try:
-                dictionary.delete(key)
-                print("Key-value pair deleted successfully.")
-            except KeyError as e:
-                print(e)
+            dictionary.delete(key)
         elif choice == "4":
             print("Exiting program.")
             break
