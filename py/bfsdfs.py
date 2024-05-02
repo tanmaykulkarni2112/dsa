@@ -9,14 +9,15 @@ class Graph:
 
     def dfs(self, start):
         visited = set()
-        self._dfs_helper(start, visited)
-
-    def _dfs_helper(self, node, visited):
-        visited.add(node)
-        print(node, end=' ')
-        for neighbor in self.adj_list[node]:
-            if neighbor not in visited:
-                self._dfs_helper(neighbor, visited)
+        stack = [start]
+        visited.add(start)
+        while stack:
+            node = stack.pop()
+            print(node, end=' ')
+            for neighbor in self.adj_list[node]:
+                if neighbor not in visited:
+                    stack.append(neighbor)
+                    visited.add(neighbor)
 
     def bfs(self, start):
         visited = set()
@@ -78,4 +79,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
